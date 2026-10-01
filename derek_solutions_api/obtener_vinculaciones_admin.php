@@ -1,8 +1,18 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 include_once 'conexion.php';
+include_once 'auth_middleware.php';
+
+$usuario = requireAuth(['administrador']);
 
 try {
 
@@ -40,9 +50,11 @@ try {
 
 } catch(PDOException $e){
 
+    error_log("Error en obtener_vinculaciones_admin: " . $e->getMessage());
+    http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => $e->getMessage()
+        "message" => "No se pudieron obtener las vinculaciones."
     ]);
 }
 ?>

@@ -2,19 +2,29 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Cache-Control: no-cache, must-revalidate");
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 include_once 'conexion.php';
+include_once 'auth_middleware.php';
+
+$usuario = requireAuth(['familiar']);
 
 if (!isset($_GET['familiar_id']) || empty($_GET['familiar_id'])) {
     echo json_encode([
-        "success" => false, 
+        "success" => false,
         "message" => "Falta el ID del familiar."
     ]);
     exit();
 }
 
-$familiar_id = intval($_GET['familiar_id']);
+// Se ignora cualquier familiar_id enviado por el cliente: siempre se usa el del token verificado.
+$familiar_id = (int)$usuario['id'];
 $fecha_hoy = date('Y-m-d');
 $hora_actual = date('H:i:s');
 
@@ -41,13 +51,14 @@ try {
     $placeholders = implode(',', array_fill(0, count($adultos_ids), '?'));
     
     // ✅ CONSULTA CORREGIDA - Sin u.apellido
-    $query = "SELECT 
-                m.id, 
-                m.nombre, 
-                m.dosis, 
-                m.horario, 
-                m.adulto_mayor_id, 
+    $query = "SELECT
+                m.id,
+                m.nombre,
+                m.dosis,
+                m.horario,
+                m.adulto_mayor_id,
                 m.recurrencia_horas,
+                m.nota,
                 u.nombre AS nombre_adulto
               FROM medicamentos m
               INNER JOIN usuarios u ON m.adulto_mayor_id = u.id
@@ -85,6 +96,7 @@ try {
             "horario" => $med['horario'] ?? '00:00:00',
             "adulto_mayor_id" => intval($med['adulto_mayor_id']),
             "recurrencia_horas" => $recurrencia,
+            "nota" => $med['nota'] ?? null,
             "nombre_adulto" => $nombre_completo,
             "estado" => $ultima_toma ? "tomado" : "pendiente",
             "hora_toma_real" => $ultima_toma['hora_toma'] ?? null
@@ -99,10 +111,11 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    error_log("Error SQL: " . $e->getMessage());
+    error_log("Error en obtener_medicamentos_familiar: " . $e->getMessage());
+    http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Error SQL: " . $e->getMessage()
+        "message" => "No se pudieron obtener los medicamentos."
     ]);
 }
 ?>

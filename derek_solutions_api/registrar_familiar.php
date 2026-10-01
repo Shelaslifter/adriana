@@ -4,6 +4,11 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 include_once 'conexion.php';
 
 $data = json_decode(file_get_contents("php://input"));
@@ -11,7 +16,8 @@ $data = json_decode(file_get_contents("php://input"));
 if (!empty($data->nombre) && !empty($data->email) && !empty($data->password)) {
     $nombre = trim($data->nombre);
     $email = trim($data->email);
-    $password = trim($data->password); // Nota: Puedes usar password_hash() si deseas encriptarla más adelante
+    $telefono = !empty($data->telefono) ? trim($data->telefono) : null;
+    $password = password_hash(trim($data->password), PASSWORD_DEFAULT);
 
     try {
         // 1. Verificar si el correo ya existe para evitar duplicados
@@ -26,13 +32,14 @@ if (!empty($data->nombre) && !empty($data->email) && !empty($data->password)) {
         }
 
         // 2. Insertar el nuevo familiar con estado 'activo' o 'pendiente' según tu flujo
-        $query = "INSERT INTO usuarios (nombre, email, password, rol, estado) 
-                  VALUES (:nombre, :email, :password, 'familiar', 'activo')";
-        
+        $query = "INSERT INTO usuarios (nombre, email, telefono, password, rol, estado)
+                  VALUES (:nombre, :email, :telefono, :password, 'familiar', 'activo')";
+
         $stmt = $conn->prepare($query);
         $exito = $stmt->execute([
             ':nombre'   => $nombre,
             ':email'    => $email,
+            ':telefono' => $telefono,
             ':password' => $password
         ]);
 
@@ -48,8 +55,9 @@ if (!empty($data->nombre) && !empty($data->email) && !empty($data->password)) {
         }
 
     } catch (PDOException $e) {
-        http_response_code(200);
-        echo json_encode(["success" => false, "message" => "Error en la base de datos: " . $e->getMessage()]);
+        error_log("Error en registrar_familiar: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "No se pudo completar el registro."]);
     }
 } else {
     http_response_code(400);

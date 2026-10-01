@@ -29,30 +29,22 @@ if (!empty($data->email) && !empty($data->password)) {
 
         if ($stmt->rowCount() > 0) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $esValido = false;
 
-            // Detectar si la contraseña en BD ya es un hash BCRYPT
-            if (strpos($row['password'], '$2y$') === 0 || strpos($row['password'], '$2b$') === 0) {
-                // Validación con Hash BCRYPT
-                $esValido = password_verify($password, $row['password']);
-            } else {
-                // Validación temporal con Texto Plano
-                if ($password === $row['password']) {
-                    $esValido = true;
-
-                    // MIGRACIÓN AUTOMÁTICA: Convertir la contraseña de texto plano a Hash BCRYPT en BD
-                    $nuevoHash = password_hash($password, PASSWORD_BCRYPT);
-                    $updateQuery = "UPDATE usuarios SET password = :nuevoHash WHERE id = :id";
-                    $updateStmt  = $conn->prepare($updateQuery);
-                    $updateStmt->bindParam(":nuevoHash", $nuevoHash);
-                    $updateStmt->bindParam(":id", $row['id']);
-                    $updateStmt->execute();
-                }
-            }
+            // Todas las contraseñas de la BD ya están hasheadas con password_hash();
+            // ya no se acepta comparación en texto plano.
+            $esValido = $row['password'] !== null && password_verify($password, $row['password']);
 
             if ($esValido) {
-                // Obtener la clave secreta desde .env
-                $jwtSecret = $_ENV['JWT_SECRET'] ?? 'ClaveSecretaPorDefecto123!';
+                // Obtener la clave secreta desde .env (obligatoria, sin valor por defecto)
+                $jwtSecret = $_ENV['JWT_SECRET'] ?? null;
+                if (empty($jwtSecret)) {
+                    http_response_code(500);
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "Error de configuración del servidor."
+                    ]);
+                    exit();
+                }
 
                 // Datos a incluir dentro del payload del token JWT
                 $payloadData = [

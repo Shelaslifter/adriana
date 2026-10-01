@@ -1,0 +1,22 @@
+# Secretos y configuración local - nunca deben subirse al repositorio
+derek_solutions_api/.env
+.env
+*.env.local
+
+# Flutter / Dart (marga/marga_app)
+marga/marga_app/.dart_tool/
+marga/marga_app/.flutter-plugins-dependencies
+marga/marga_app/.pub-cache/
+marga/marga_app/.pub/
+marga/marga_app/build/
+marga/marga_app/coverage/
+marga/marga_app/android/app/debug
+marga/marga_app/android/app/profile
+marga/marga_app/android/app/release
+marga/marga_app/**/doc/api/
+marga/marga_app/**/ios/Flutter/.last_build_id
+marga/marga_app/.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store

@@ -2,8 +2,17 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 include_once 'conexion.php';
+include_once 'auth_middleware.php';
+
+$usuario = requireAuth(['familiar']);
 
 if (!isset($_GET['familiar_id']) || empty($_GET['familiar_id'])) {
     echo json_encode([
@@ -13,7 +22,8 @@ if (!isset($_GET['familiar_id']) || empty($_GET['familiar_id'])) {
     exit();
 }
 
-$familiar_id = intval($_GET['familiar_id']);
+// Se ignora cualquier familiar_id enviado por el cliente: siempre se usa el del token verificado.
+$familiar_id = (int)$usuario['id'];
 $dias = isset($_GET['dias']) ? intval($_GET['dias']) : 7;
 
 try {
@@ -190,9 +200,11 @@ try {
     ]);
 
 } catch (PDOException $e) {
+    error_log("Error en obtener_bitacora_familiar: " . $e->getMessage());
+    http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Error: " . $e->getMessage()
+        "message" => "No se pudo obtener la bitácora."
     ]);
 }
 ?>

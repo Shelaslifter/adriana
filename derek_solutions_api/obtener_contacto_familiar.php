@@ -24,7 +24,9 @@ if (isset($_GET['adulto_mayor_id'])) {
             echo json_encode(["success" => false, "message" => "No se encontró familiar vinculado."]);
         }
     } catch (PDOException $e) {
-        echo json_encode(["success" => false, "message" => $e->getMessage()]);
+        error_log("Error en obtener_contacto_familiar: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "No se pudo obtener el contacto."]);
     }
 }
 ?>
