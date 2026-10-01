@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:marga_app/auth_services/auth_service.dart';
+import 'package:marga_app/config/api_config.dart';
 import 'package:marga_app/screens/login/login_screen.dart';
 
 class AdminScreen extends StatefulWidget {
@@ -15,7 +16,7 @@ class _AdminScreenState extends State<AdminScreen> {
   bool isLoading = true;
   List<dynamic> vinculaciones = [];
 
-  final String baseUri = "http://192.168.1.155/derek_solutions_api/";
+  final String baseUri = ApiConfig.baseUrl;
 
   static const Color _primary = Color(0xFF4338CA); // indigo-700
   static const Color _primaryDark = Color(0xFF312E81); // indigo-900

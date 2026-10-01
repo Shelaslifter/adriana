@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:marga_app/auth_services/auth_service.dart';
+import 'package:marga_app/config/api_config.dart';
 import 'package:marga_app/screens/login/login_screen.dart';
 import 'package:marga_app/screens/medicamento/agregar_medicamento_screen.dart';
 import 'package:marga_app/screens/codigo/generar_codigo_screen.dart';
@@ -27,8 +28,7 @@ class _FamiliarHomeScreenState extends State<FamiliarHomeScreen> {
   static const Color _primary = Color(0xFF1D4ED8); // blue-700
   static const Color _primaryDark = Color(0xFF1E3A8A); // blue-900
 
-  // REEMPLAZA CON TU IP LOCAL DE XAMPP
-  final String _baseUri = "http://192.168.1.155/derek_solutions_api/";
+  final String _baseUri = ApiConfig.baseUrl;
 
   @override
   void initState() {

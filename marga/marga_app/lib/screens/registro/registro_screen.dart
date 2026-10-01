@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:marga_app/config/api_config.dart';
 
 class RegistroScreen extends StatefulWidget {
   const RegistroScreen({super.key});
@@ -21,7 +22,7 @@ class _RegistroScreenState extends State<RegistroScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  final String _registroUrl = "http://192.168.1.155/derek_solutions_api/registrar_familiar.php";
+  final String _registroUrl = "${ApiConfig.baseUrl}registrar_familiar.php";
 
   Future<void> _handleRegistro() async {
     if (!_formKey.currentState!.validate()) return;

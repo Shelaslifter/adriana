@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:marga_app/admin/admin_screen.dart';
+import 'package:marga_app/config/api_config.dart';
 import 'package:marga_app/screens/adulto/adulto_mayor_screen.dart';
 import 'dart:convert';
 
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  final String _loginUrl = "http://192.168.1.155/derek_solutions_api/login.php";
+  final String _loginUrl = "${ApiConfig.baseUrl}login.php";
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;

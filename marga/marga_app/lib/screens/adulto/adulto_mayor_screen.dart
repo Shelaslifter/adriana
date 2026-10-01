@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:marga_app/config/api_config.dart';
 
 class AdultoMayorScreen extends StatefulWidget {
   const AdultoMayorScreen({Key? key}) : super(key: key);
@@ -23,8 +24,7 @@ class _AdultoMayorScreenState extends State<AdultoMayorScreen> {
   static const Color _primary = Color(0xFF1D4ED8); // blue-700
   static const Color _primaryDark = Color(0xFF1E3A8A); // blue-900
 
-  // IP de tu servidor local XAMPP
-  final String _baseUri = "http://192.168.1.155/derek_solutions_api/";
+  final String _baseUri = ApiConfig.baseUrl;
 
   @override
   void initState() {

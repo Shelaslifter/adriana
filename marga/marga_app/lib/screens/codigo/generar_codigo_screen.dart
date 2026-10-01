@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:marga_app/auth_services/auth_service.dart';
+import 'package:marga_app/config/api_config.dart';
 
 class GenerarCodigoScreen extends StatefulWidget {
   final int familiarId;
@@ -19,7 +20,7 @@ class _GenerarCodigoScreenState extends State<GenerarCodigoScreen> {
   static const Color _primary = Color(0xFF1D4ED8); // blue-700
   static const Color _primaryDark = Color(0xFF1E3A8A); // blue-900
 
-  final String _apiUrl = "http://192.168.1.155/derek_solutions_api/crear_vinculacion.php";
+  final String _apiUrl = "${ApiConfig.baseUrl}crear_vinculacion.php";
 
   Future<void> _generarCodigo() async {
     if (_nombreAdultoController.text.trim().isEmpty) return;

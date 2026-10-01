@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:marga_app/auth_services/auth_service.dart';
+import 'package:marga_app/config/api_config.dart';
 
 class AgregarMedicamentoScreen extends StatefulWidget {
   final int familiarId;
@@ -36,8 +37,7 @@ class _AgregarMedicamentoScreenState extends State<AgregarMedicamentoScreen> {
 
   bool get _esEdicion => widget.medicamentoExistente != null;
 
-  // REEMPLAZA CON TU IP LOCAL DE XAMPP
-  final String _baseUri = "http://192.168.1.155/derek_solutions_api/";
+  final String _baseUri = ApiConfig.baseUrl;
 
   @override
   void initState() {
